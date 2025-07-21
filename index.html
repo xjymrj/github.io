@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小橘羊毛日记</title>
+    <style>
+        :root {
+            --primary: #FF9800;
+            --primary-dark: #F57C00;
+            --secondary: #5C6BC0;
+            --light: #FFF8E1;
+            --dark: #333333;
+            --success: #4CAF50;
+            --error: #F44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #FFFDE7;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(255, 152, 0, 0.2);
+            padding: 30px;
+            border: 1px solid #FFE0B2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #FFE0B2;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--dark);
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #FFE0B2;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 120px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #FFF8E1;
+        }
+        
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .generate-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .generate-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .copy-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3F51B5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(92, 107, 192, 0.3);
+        }
+        
+        .output-section {
+            margin-top: 30px;
+        }
+        
+        .output-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: var(--success);
+            font-weight: 500;
+            font-size: 18px;
+        }
+        
+        .output-label::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--success);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .result-container {
+            background-color: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px dashed #FFE0B2;
+            min-height: 120px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 30px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateX(100%);
+            z-index: 1000;
+            font-size: 16px;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .success-notification {
+            background: var(--success);
+        }
+        
+        .error-notification {
+            background: var(--error);
+        }
+        
+        .tooltip {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 8px;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .orange-icon {
+            color: var(--primary);
+            font-size: 24px;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>小橘羊毛日记</h1>
+            <div class="subtitle">小程序链接参数转换工具</div>
+        </div>
+        
+        <div class="input-section">
+            <div class="section-title">
+                <span class="orange-icon">🍊</span> 输入原始链接
+            </div>
+            <textarea id="inputUrl" placeholder="请输入包含poi_id_str的链接..."></textarea>
+            <div class="tooltip">提示：工具会自动识别并提取poi_id_str参数</div>
+        </div>
+        
+        <div class="button-group">
+            <button id="generateBtn" class="generate-btn">
+                <span class="orange-icon">✨</span> 生成链接
+            </button>
+            <button id="copyBtn" class="copy-btn">
+                <span class="orange-icon">📋</span> 复制结果
+            </button>
+        </div>
+        
+        <div class="output-section">
+            <div class="output-label">
+                <span class="orange-icon">✅</span> 转换结果
+            </div>
+            <div id="outputContainer" class="result-container">
+                等待生成结果...
+            </div>
+        </div>
+    </div>
+    
+    <div id="successNotification" class="notification success-notification">复制成功！</div>
+    <div id="errorNotification" class="notification error-notification">复制失败，请手动复制</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputUrl = document.getElementById('inputUrl');
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const outputContainer = document.getElementById('outputContainer');
+            const successNotification = document.getElementById('successNotification');
+            const errorNotification = document.getElementById('errorNotification');
+            
+            // 生成转换后的URL
+            generateBtn.addEventListener('click', () => {
+                const inputText = inputUrl.value.trim();
+                
+                // 提取poi_id_str参数
+                const poiIdStrMatch = inputText.match(/poi_id_str=([^&]+)/);
+                
+                if (!poiIdStrMatch) {
+                    outputContainer.textContent = "错误：未找到poi_id_str参数";
+                    outputContainer.style.color = "#F44336";
+                    return;
+                }
+                
+                const poiIdStr = poiIdStrMatch[1];
+                
+                // 编码ad_activity_flag参数值
+                const adActivityFlagValue = encodeURIComponent('{"adActivityFlag":"100","type":0}');
+                
+                // 构建新URL
+                const newUrl = `packages/restaurant-old/restaurant/restaurant?ad_activity_flag=${adActivityFlagValue}&poi_id=67890&allowance_alliance_scenes=1100&poi_id_str=${poiIdStr}`;
+                
+                outputContainer.textContent = newUrl;
+                outputContainer.style.color = "";
+            });
+            
+            // 复制功能（兼容微信环境）
+            copyBtn.addEventListener('click', () => {
+                const resultText = outputContainer.textContent;
+                
+                if (!resultText || resultText.startsWith("错误") || resultText === "等待生成结果...") {
+                    showNotification(errorNotification, "请先生成有效链接");
+                    return;
+                }
+                
+                // 创建临时textarea用于复制
+                const textArea = document.createElement('textarea');
+                textArea.value = resultText;
+                textArea.style.position = 'fixed';
+                textArea.style.top = 0;
+                textArea.style.left = 0;
+                textArea.style.opacity = 0;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    // 尝试使用现代API
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(resultText)
+                            .then(() => {
+                                showNotification(successNotification);
+                            })
+                            .catch(() => {
+                                // 现代API失败时使用传统方法
+                                if (document.execCommand('copy')) {
+                                    showNotification(successNotification);
+                                } else {
+                                    showNotification(errorNotification);
+                                }
+                            });
+                    } else {
+                        // 使用传统复制方法
+                        if (document.execCommand('copy')) {
+                            showNotification(successNotification);
+                        } else {
+                            showNotification(errorNotification);
+                        }
+                    }
+                } catch (err) {
+                    showNotification(errorNotification);
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            });
+            
+            // 显示通知
+            function showNotification(element, customText = null) {
+                if (customText) {
+                    element.textContent = customText;
+                }
+                element.classList.add('show');
+                setTimeout(() => {
+                    element.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
